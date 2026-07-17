@@ -1,0 +1,55 @@
+/* Self-hosted fonts (no external CDN — CSP-friendly, privacy-conscious). */
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+@import '@fontsource/inter/700.css';
+@import '@fontsource/noto-sans-devanagari/400.css';
+@import '@fontsource/noto-sans-devanagari/600.css';
+
+@import './tokens.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: 'Inter', 'Noto Sans Devanagari', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  /* Devanagari content gets the Devanagari-first stack. */
+  [lang='hi'] {
+    font-family: 'Noto Sans Devanagari', 'Inter', system-ui, sans-serif;
+  }
+  /* Always show a visible focus ring for keyboard users. */
+  :focus-visible {
+    outline: 2px solid var(--color-navy);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+  }
+  .card {
+    @apply rounded bg-white shadow-card ring-1 ring-black/5;
+  }
+  .btn {
+    @apply inline-flex min-h-touch min-w-touch items-center justify-center gap-2 rounded px-4 py-2 text-sm font-semibold transition-colors;
+  }
+  .btn-primary {
+    @apply btn bg-navy text-white hover:bg-navy-600;
+  }
+  .btn-secondary {
+    @apply btn bg-surface text-navy ring-1 ring-navy/20 hover:bg-white;
+  }
+  .input {
+    @apply min-h-touch w-full rounded border border-black/10 px-3 py-2 text-sm focus:border-navy;
+  }
+}
