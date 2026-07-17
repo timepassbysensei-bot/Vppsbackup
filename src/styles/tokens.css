@@ -1,0 +1,20 @@
+/* Design tokens — all colors configurable from this single place. */
+:root {
+  --color-navy: #0f2a52; /* trust / primary */
+  --color-navy-600: #17356a;
+  --color-amber: #d99000; /* emphasis / gold */
+  --color-bg: #ffffff;
+  --color-surface: #f6f7f9; /* soft neutral */
+  --color-text: #1a1f2b; /* dark readable body */
+  --color-success: #157347; /* success only */
+  --color-danger: #b02a37; /* errors/emergencies/destructive only */
+  --radius: 10px; /* restrained rounding */
+  --shadow-card: 0 1px 3px rgba(16, 24, 40, 0.08), 0 1px 2px rgba(16, 24, 40, 0.06);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

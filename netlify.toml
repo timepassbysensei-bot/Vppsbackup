@@ -1,0 +1,49 @@
+# Netlify build & security configuration for View Point Public School.
+#
+# Security model (see docs/SECURITY_CHECKLIST.md):
+#  - The browser only ever talks to Supabase (anon key, RLS-guarded) and to
+#    same-origin Netlify Functions. It NEVER talks to Gemini / Resend directly,
+#    so those hosts are deliberately absent from connect-src.
+#  - No 'unsafe-eval' and no 'unsafe-inline' for scripts. Styles are shipped as
+#    files (Tailwind build output), so 'unsafe-inline' is not required for them.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[functions]
+  node_bundler = "esbuild"
+
+# --- Redirects ---------------------------------------------------------------
+# Functions are served from /.netlify/functions/* automatically. The SPA
+# fallback MUST come last so it does not swallow function or asset routes.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# --- Security headers --------------------------------------------------------
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # NOTE: script-src includes https://challenges.cloudflare.com because the
+    # Cloudflare Turnstile widget loads its api.js from there. The browser still
+    # never talks to Gemini/Resend directly (absent from connect-src).
+    Content-Security-Policy = "default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self'; font-src 'self'; img-src 'self' data: https://*.supabase.co; connect-src 'self' https://*.supabase.co; frame-src https://challenges.cloudflare.com https://www.google.com; frame-ancestors 'none'; base-uri 'self'; object-src 'none'"
+    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(self), geolocation=(), microphone=()"
+    Cross-Origin-Opener-Policy = "same-origin"
+    Cross-Origin-Resource-Policy = "same-origin"
+    X-Frame-Options = "DENY"
+
+# Long-cache immutable hashed assets.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

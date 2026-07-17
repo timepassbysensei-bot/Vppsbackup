@@ -1,0 +1,89 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "academics": "Academics",
+    "notices": "Notices",
+    "classNotices": "Class Notices",
+    "homework": "Homework",
+    "calendar": "Calendar",
+    "achievements": "Achievements",
+    "birthdays": "Birthdays",
+    "resources": "Resources",
+    "admissions": "Admissions",
+    "contact": "Contact",
+    "teacherLogin": "Teacher Login"
+  },
+  "common": {
+    "loading": "Loading…",
+    "readMore": "Read more",
+    "close": "Close",
+    "menu": "Menu",
+    "language": "Language",
+    "english": "English",
+    "hindi": "हिन्दी",
+    "skipToContent": "Skip to content",
+    "empty": "Nothing to show yet.",
+    "error": "Something went wrong. Please try again.",
+    "hiUnavailable": "Hindi translation not available",
+    "backToTop": "Back to top"
+  },
+  "home": {
+    "quickLinks": "Quick links",
+    "currentTimings": "Current timings",
+    "morning": "Morning",
+    "day": "Day",
+    "upcomingEvents": "Upcoming events",
+    "facilities": "Facilities",
+    "studentOfMonth": "Student of the Month",
+    "principalMessage": "Principal's message",
+    "principalMessagePlaceholder": "A message from the Principal will be shared here soon.",
+    "noBirthdays": "",
+    "happyBirthday": "Happy Birthday!"
+  },
+  "contact": {
+    "title": "Contact us",
+    "office": "School office",
+    "hours": "Office hours",
+    "sendMessage": "Send a message",
+    "feeNote": "For fee information, please contact the school office directly."
+  },
+  "admissions": {
+    "title": "Admissions",
+    "closed": "Online admission enquiries are currently closed. Please contact the school office directly for assistance.",
+    "feeNote": "For fee information, please contact the school office directly.",
+    "consent": "I consent to the school contacting me about this enquiry.",
+    "submit": "Submit enquiry",
+    "thanks": "Thank you. Your enquiry has been received."
+  },
+  "form": {
+    "studentName": "Student's name",
+    "guardianName": "Guardian's name",
+    "senderName": "Your name",
+    "phone": "Phone number",
+    "email": "Email (optional)",
+    "classApplying": "Class applying for",
+    "currentSchool": "Current school (optional)",
+    "message": "Message",
+    "class": "Class",
+    "section": "Section",
+    "required": "This field is required.",
+    "invalidPhone": "Please enter a valid phone number.",
+    "sending": "Sending…"
+  },
+  "admin": {
+    "login": "Teacher & Principal Login",
+    "loginGoogle": "Continue with Google",
+    "pendingTitle": "Awaiting approval",
+    "pendingBody": "Your account has been created and is waiting for the principal to approve it. You'll get access once approved.",
+    "signOut": "Sign out",
+    "teacherDashboard": "Teacher dashboard",
+    "principalDashboard": "Principal dashboard"
+  },
+  "sensei": {
+    "title": "Ask Sensei",
+    "placeholder": "Ask about timings, notices, admissions…",
+    "send": "Send",
+    "disclaimer": "Please confirm important information directly with the school office."
+  }
+}
