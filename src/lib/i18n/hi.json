@@ -29,17 +29,35 @@
     "backToTop": "ऊपर जाएँ"
   },
   "home": {
+    "eyebrow": "नेर्सरी से कक्षा 10 · सह-शिक्षा",
+    "heroLead": "हमारी सूचनाएँ, शैक्षणिक जानकारी, समय-सारणी और प्रवेश की जानकारी एक ही स्थान पर देखें।",
     "quickLinks": "त्वरित लिंक",
+    "exploreCta": "विद्यालय को जानें",
+    "stayInformed": "अद्यतित रहें",
+    "viewAll": "सभी देखें",
+    "statsEstablished": "स्थापना",
+    "statsAffiliation": "संबद्धता",
+    "statsClasses": "कक्षाएँ",
+    "statsFacilities": "सुविधाएँ",
+    "classesRange": "नेर्सरी – 10",
     "currentTimings": "वर्तमान समय-सारणी",
     "morning": "प्रातःकालीन",
     "day": "दिवाकालीन",
     "upcomingEvents": "आगामी कार्यक्रम",
     "facilities": "सुविधाएँ",
+    "facilitiesTitle": "सुविधाएँ एक नज़र में",
     "studentOfMonth": "इस माह का विद्यार्थी",
     "principalMessage": "प्रधानाचार्य का संदेश",
     "principalMessagePlaceholder": "प्रधानाचार्य का संदेश शीघ्र ही यहाँ साझा किया जाएगा।",
     "noBirthdays": "",
-    "happyBirthday": "जन्मदिन की शुभकामनाएँ!"
+    "happyBirthday": "जन्मदिन की शुभकामनाएँ!",
+    "ctaTitle": "और जानने के लिए तैयार हैं?",
+    "ctaBody": "प्रवेश की जानकारी देखें या विद्यालय कार्यालय से संपर्क करें — हम सहायता के लिए तैयार हैं।"
+  },
+  "footer": {
+    "explore": "खोजें",
+    "reachUs": "संपर्क करें",
+    "connect": "जुड़ें"
   },
   "contact": {
     "title": "संपर्क करें",

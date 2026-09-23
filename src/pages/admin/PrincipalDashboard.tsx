@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase';
 import { callFunction } from '@/lib/api';
 import { maskPhone } from '@/lib/validation/schemas';
 import { AdminShell } from '@/app/AdminShell';
+import { BrandingPanel } from './BrandingPanel';
 
 interface StaffRow {
   user_id: string;
@@ -141,6 +142,9 @@ export function PrincipalDashboard() {
           </ul>
         )}
       </section>
+
+      {/* Branding: logo + favicon uploads (RLS restricts writes to the principal). */}
+      <BrandingPanel />
     </AdminShell>
   );
 }

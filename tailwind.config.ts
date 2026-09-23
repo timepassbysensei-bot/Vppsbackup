@@ -18,21 +18,35 @@ const config: Config = {
         navy: {
           DEFAULT: alpha('--color-navy'),
           600: alpha('--color-navy-600'),
+          900: alpha('--color-navy-900'),
         },
         amber: {
           DEFAULT: alpha('--color-amber'),
+          300: alpha('--color-amber-300'),
+          700: alpha('--color-amber-700'),
         },
+        teal: {
+          DEFAULT: alpha('--color-teal'),
+          700: alpha('--color-teal-700'),
+        },
+        sky: alpha('--color-sky'),
         bg: alpha('--color-bg'),
         surface: alpha('--color-surface'),
+        'surface-2': alpha('--color-surface-2'),
         text: alpha('--color-text'),
+        muted: alpha('--color-muted'),
         success: alpha('--color-success'),
         danger: alpha('--color-danger'),
       },
       borderRadius: {
         DEFAULT: 'var(--radius)',
+        lg: 'var(--radius-lg)',
+        xl: 'var(--radius-xl)',
       },
       boxShadow: {
         card: 'var(--shadow-card)',
+        elevated: 'var(--shadow-elevated)',
+        glow: 'var(--shadow-glow)',
       },
       fontFamily: {
         sans: ['Inter', 'Noto Sans Devanagari', 'system-ui', 'sans-serif'],

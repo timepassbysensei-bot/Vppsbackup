@@ -35,6 +35,12 @@ npm test            # vitest
 npm run test:e2e    # playwright (needs a running server)
 ```
 
+## Branding & favicon
+
+See [CUSTOMIZATION](CUSTOMIZATION.md). In short: the favicon is
+`public/favicon.svg` (or an upload from the admin dashboard), and the theme
+lives in `src/styles/tokens.css`.
+
 ## RLS harness (no cloud)
 
 See `tests/rls/README.md` to validate the security model against a local

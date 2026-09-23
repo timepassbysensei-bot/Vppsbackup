@@ -9,7 +9,9 @@ import AxeBuilder from '@axe-core/playwright';
 test('home page loads and exposes primary navigation', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('navigation', { name: 'Primary' })).toBeVisible();
-  await expect(page.getByRole('link', { name: /Admissions/i })).toBeVisible();
+  // The admissions CTA appears in the nav, hero and closing band; assert on the
+  // first (top-most, always visible) one rather than every match.
+  await expect(page.getByRole('link', { name: /Admissions/i }).first()).toBeVisible();
 });
 
 test('home page has no critical accessibility violations', async ({ page }) => {

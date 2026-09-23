@@ -2,9 +2,31 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="light" />
+
+    <!--
+      ===========================================================================
+      FAVICON — the ONE place to change the tab / bookmark / home-screen icon.
+      ===========================================================================
+      The default icon is the static file `public/favicon.svg`. Replace that file
+      (and/or upload one from the admin dashboard) and every tag below updates.
+      See docs/CUSTOMIZATION.md for the full guide.
+
+      Each link carries a `data-vpps-*` attribute so BrandingEffects can keep it
+      in sync with the school's uploaded branding asset at runtime without
+      creating duplicate tags.
+    -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" data-vpps-favicon />
+    <link rel="shortcut icon" href="/favicon.svg" data-vpps-favicon />
+    <link rel="apple-touch-icon" href="/favicon.svg" data-vpps-apple-touch-icon />
+    <link rel="mask-icon" href="/mask-icon.svg" color="#10243f" data-vpps-mask-icon />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#10243f" data-vpps-theme-color />
+    <meta name="msapplication-TileColor" content="#10243f" data-vpps-theme-color />
+    <meta name="apple-mobile-web-app-title" content="VPPS" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+
     <!--
       Meta description is intentionally neutral and factual. No superlatives.
       The document title and og tags are populated at runtime from

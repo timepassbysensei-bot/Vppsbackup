@@ -29,17 +29,35 @@
     "backToTop": "Back to top"
   },
   "home": {
+    "eyebrow": "Nursery to Class 10 · Co-educational",
+    "heroLead": "See our notices, academics, timings and admissions information — all in one place.",
     "quickLinks": "Quick links",
+    "exploreCta": "Explore the school",
+    "stayInformed": "Stay informed",
+    "viewAll": "View all",
+    "statsEstablished": "Established",
+    "statsAffiliation": "Affiliation",
+    "statsClasses": "Classes",
+    "statsFacilities": "Facilities",
+    "classesRange": "Nursery – 10",
     "currentTimings": "Current timings",
     "morning": "Morning",
     "day": "Day",
     "upcomingEvents": "Upcoming events",
     "facilities": "Facilities",
+    "facilitiesTitle": "Facilities at a glance",
     "studentOfMonth": "Student of the Month",
     "principalMessage": "Principal's message",
     "principalMessagePlaceholder": "A message from the Principal will be shared here soon.",
     "noBirthdays": "",
-    "happyBirthday": "Happy Birthday!"
+    "happyBirthday": "Happy Birthday!",
+    "ctaTitle": "Ready to find out more?",
+    "ctaBody": "See admissions information or reach the school office — we are glad to help."
+  },
+  "footer": {
+    "explore": "Explore",
+    "reachUs": "Reach us",
+    "connect": "Connect"
   },
   "contact": {
     "title": "Contact us",

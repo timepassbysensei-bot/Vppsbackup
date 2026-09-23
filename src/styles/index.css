@@ -3,6 +3,7 @@
 @import '@fontsource/inter/500.css';
 @import '@fontsource/inter/600.css';
 @import '@fontsource/inter/700.css';
+@import '@fontsource/inter/800.css';
 @import '@fontsource/noto-sans-devanagari/400.css';
 @import '@fontsource/noto-sans-devanagari/600.css';
 
@@ -15,12 +16,14 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
   }
   body {
     background-color: var(--color-bg);
     color: var(--color-text);
     font-family: 'Inter', 'Noto Sans Devanagari', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
   /* Devanagari content gets the Devanagari-first stack. */
   [lang='hi'] {
@@ -28,8 +31,17 @@
   }
   /* Always show a visible focus ring for keyboard users. */
   :focus-visible {
-    outline: 2px solid var(--color-navy);
+    outline: 2px solid var(--color-amber);
     outline-offset: 2px;
+    border-radius: 4px;
+  }
+  ::selection {
+    background: color-mix(in srgb, var(--color-amber) 35%, transparent);
+  }
+  h1,
+  h2,
+  h3 {
+    letter-spacing: -0.02em;
   }
 }
 
@@ -37,19 +49,342 @@
   .container-page {
     @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
   }
+
+  /* ---- Surfaces ---------------------------------------------------------- */
   .card {
-    @apply rounded bg-white shadow-card ring-1 ring-black/5;
+    background: var(--color-bg);
+    border-radius: var(--radius-lg);
+    border: 1px solid color-mix(in srgb, var(--color-navy) 8%, transparent);
+    box-shadow: var(--shadow-card);
   }
+  .card-quiet {
+    background: color-mix(in srgb, var(--color-surface) 70%, transparent);
+    border-radius: var(--radius-lg);
+    border: 1px solid color-mix(in srgb, var(--color-navy) 7%, transparent);
+  }
+  .glass {
+    background: color-mix(in srgb, #ffffff 72%, transparent);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border: 1px solid color-mix(in srgb, #ffffff 55%, transparent);
+    box-shadow: var(--shadow-card);
+    border-radius: var(--radius-lg);
+  }
+  .glass-dark {
+    background: color-mix(in srgb, #0a1830 42%, transparent);
+    backdrop-filter: blur(14px) saturate(130%);
+    -webkit-backdrop-filter: blur(14px) saturate(130%);
+    border: 1px solid color-mix(in srgb, #ffffff 16%, transparent);
+    border-radius: var(--radius-lg);
+  }
+
+  /* ---- Buttons ----------------------------------------------------------- */
   .btn {
-    @apply inline-flex min-h-touch min-w-touch items-center justify-center gap-2 rounded px-4 py-2 text-sm font-semibold transition-colors;
+    @apply inline-flex min-h-touch min-w-touch items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold;
+    border-radius: var(--radius-pill);
+    transition:
+      transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.25s ease,
+      background-color 0.25s ease,
+      color 0.25s ease;
   }
   .btn-primary {
-    @apply btn bg-navy text-white hover:bg-navy-600;
+    @apply btn text-white;
+    background-image: var(--grad-brand);
+    box-shadow: 0 12px 28px -14px rgba(16, 36, 63, 0.9);
+  }
+  .btn-gold {
+    @apply btn;
+    color: var(--color-navy-900);
+    background-image: var(--grad-gold);
+    box-shadow: var(--shadow-glow);
   }
   .btn-secondary {
-    @apply btn bg-surface text-navy ring-1 ring-navy/20 hover:bg-white;
+    @apply btn;
+    color: var(--color-navy);
+    background: color-mix(in srgb, var(--color-surface) 90%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-navy) 18%, transparent);
   }
+  .btn-ghost {
+    @apply btn;
+    color: #fff;
+    background: color-mix(in srgb, #ffffff 12%, transparent);
+    border: 1px solid color-mix(in srgb, #ffffff 28%, transparent);
+  }
+
+  /* ---- Typography accents ------------------------------------------------ */
+  .eyebrow {
+    @apply inline-flex items-center gap-2 text-xs font-semibold uppercase;
+    letter-spacing: 0.14em;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium;
+    background: color-mix(in srgb, var(--color-navy) 7%, transparent);
+    color: var(--color-navy);
+  }
+  .section-title {
+    @apply text-2xl font-bold sm:text-3xl;
+    color: var(--color-navy);
+    letter-spacing: -0.025em;
+  }
+
+  /* ---- Inputs ------------------------------------------------------------ */
   .input {
-    @apply min-h-touch w-full rounded border border-black/10 px-3 py-2 text-sm focus:border-navy;
+    @apply min-h-touch w-full px-3.5 py-2.5 text-sm;
+    border-radius: var(--radius);
+    border: 1px solid color-mix(in srgb, var(--color-navy) 14%, transparent);
+    background: var(--color-bg);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .input:focus {
+    border-color: var(--color-navy);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-sky) 18%, transparent);
+    outline: none;
+  }
+
+  /* ---- Decorative backgrounds ------------------------------------------- */
+  .mesh-brand {
+    background-image:
+      radial-gradient(60% 55% at 12% 8%, rgba(47, 111, 237, 0.4) 0%, transparent 60%),
+      radial-gradient(50% 50% at 88% 12%, rgba(18, 165, 148, 0.32) 0%, transparent 62%),
+      radial-gradient(60% 60% at 78% 96%, rgba(223, 161, 46, 0.28) 0%, transparent 60%),
+      var(--grad-brand);
+  }
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+  .grain::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.5;
+    mix-blend-mode: soft-light;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .orb {
+    position: absolute;
+    border-radius: 999px;
+    filter: blur(46px);
+    pointer-events: none;
+    will-change: transform;
+  }
+}
+
+@layer utilities {
+  /* Gradient text for headlines. */
+  .text-gradient {
+    background-image: linear-gradient(100deg, #ffffff 0%, #cfe0ff 45%, #f6cd72 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .text-gradient-gold {
+    background-image: var(--grad-gold);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .text-gradient-navy {
+    background-image: linear-gradient(100deg, #10243f 0%, #1c3c66 55%, #2f6fed 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .divider-gold {
+    background-image: var(--grad-gold);
+    border-radius: 999px;
+  }
+
+  /* ---- Scroll reveal (progressively enhanced; visible by default if JS off) */
+  .reveal,
+  .reveal-left,
+  .reveal-right,
+  .reveal-scale {
+    opacity: 0;
+    transition:
+      opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .reveal {
+    transform: translateY(28px);
+  }
+  .reveal-left {
+    transform: translateX(-32px);
+  }
+  .reveal-right {
+    transform: translateX(32px);
+  }
+  .reveal-scale {
+    transform: scale(0.94);
+  }
+  .reveal-mask {
+    clip-path: inset(0 0 100% 0);
+    transition: clip-path 1s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .reveal.is-visible,
+  .reveal-left.is-visible,
+  .reveal-right.is-visible,
+  .reveal-scale.is-visible,
+  .reveal-mask.is-visible {
+    opacity: 1;
+    transform: none;
+    clip-path: inset(0 0 0 0);
+  }
+  .reveal-d1 {
+    transition-delay: 0.08s;
+  }
+  .reveal-d2 {
+    transition-delay: 0.16s;
+  }
+  .reveal-d3 {
+    transition-delay: 0.24s;
+  }
+  .reveal-d4 {
+    transition-delay: 0.32s;
+  }
+  .reveal-d5 {
+    transition-delay: 0.4s;
+  }
+  .reveal-d6 {
+    transition-delay: 0.48s;
+  }
+
+  /* ---- Keyframes + animation helpers ------------------------------------ */
+  .animate-floaty {
+    animation: floaty 7s ease-in-out infinite;
+  }
+  .animate-floaty-slow {
+    animation: floaty 11s ease-in-out infinite;
+  }
+  .animate-drift {
+    animation: drift 18s ease-in-out infinite alternate;
+  }
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient-pan 12s ease infinite;
+  }
+  .animate-rise {
+    animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .rise-d1 {
+    animation-delay: 0.06s;
+  }
+  .rise-d2 {
+    animation-delay: 0.12s;
+  }
+  .rise-d3 {
+    animation-delay: 0.18s;
+  }
+  .rise-d4 {
+    animation-delay: 0.24s;
+  }
+  .rise-d5 {
+    animation-delay: 0.3s;
+  }
+  .rise-d6 {
+    animation-delay: 0.36s;
+  }
+  .animate-sheen {
+    position: relative;
+    overflow: hidden;
+  }
+  .animate-sheen::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: var(--grad-sheen);
+    transform: translateX(-120%);
+    animation: sheen 5s ease-in-out infinite;
+  }
+  .animate-pulse-soft {
+    animation: pulse-soft 3.2s ease-in-out infinite;
+  }
+}
+
+@keyframes floaty {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+@keyframes drift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  100% {
+    transform: translate3d(28px, -22px, 0) scale(1.12);
+  }
+}
+@keyframes gradient-pan {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes sheen {
+  0%,
+  60% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(120%);
+  }
+}
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+/* Hover effects only where hover exists, so touch devices don't get stuck. */
+@media (hover: hover) {
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 36px -16px rgba(16, 36, 63, 0.95);
+  }
+  .btn-gold:hover {
+    transform: translateY(-2px);
+  }
+  .btn-secondary:hover {
+    border-color: color-mix(in srgb, var(--color-navy) 32%, transparent);
+    background: #fff;
+  }
+  .btn-ghost:hover {
+    background: color-mix(in srgb, #ffffff 20%, transparent);
+  }
+  .hover-lift {
+    transition:
+      transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.35s ease,
+      border-color 0.35s ease;
+  }
+  .hover-lift:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-elevated);
+    border-color: color-mix(in srgb, var(--color-amber) 45%, transparent);
   }
 }

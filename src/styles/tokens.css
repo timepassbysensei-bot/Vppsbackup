@@ -1,20 +1,69 @@
-/* Design tokens — all colors configurable from this single place. */
+/* =============================================================================
+   Design tokens — the single place to re-theme the whole site.
+   Changing a hex here updates every Tailwind utility, gradient and shadow.
+   (Keep the token NAMES stable: components and tailwind.config.ts reference them.)
+   ============================================================================= */
 :root {
-  --color-navy: #0f2a52; /* trust / primary */
-  --color-navy-600: #17356a;
-  --color-amber: #d99000; /* emphasis / gold */
+  /* Brand — deep ink navy for trust, warm gold for emphasis, teal/sky accents */
+  --color-navy: #10243f;
+  --color-navy-600: #1b3a63;
+  --color-navy-900: #081628;
+  --color-amber: #dfa12e;
+  --color-amber-300: #f6cd72;
+  /* Darker variants for TEXT on light backgrounds (AA contrast). */
+  --color-amber-700: #8f5f08;
+  --color-teal-700: #0b7a6d;
+  --color-teal: #12a594;
+  --color-sky: #2f6fed;
+
+  /* Neutrals */
   --color-bg: #ffffff;
-  --color-surface: #f6f7f9; /* soft neutral */
-  --color-text: #1a1f2b; /* dark readable body */
-  --color-success: #157347; /* success only */
-  --color-danger: #b02a37; /* errors/emergencies/destructive only */
-  --radius: 10px; /* restrained rounding */
-  --shadow-card: 0 1px 3px rgba(16, 24, 40, 0.08), 0 1px 2px rgba(16, 24, 40, 0.06);
+  --color-surface: #f5f7fb;
+  --color-surface-2: #eaf0f9;
+  --color-text: #131e2c;
+  --color-muted: #5a6b80;
+
+  /* Status — used only for success / errors / emergencies */
+  --color-success: #157347;
+  --color-danger: #b02a37;
+
+  /* Radii */
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-pill: 999px;
+
+  /* Shadows — soft, layered, low-contrast for a premium feel */
+  --shadow-card: 0 1px 2px rgba(16, 24, 40, 0.05), 0 10px 30px -16px rgba(16, 24, 40, 0.28);
+  --shadow-elevated: 0 24px 60px -24px rgba(8, 22, 40, 0.45);
+  --shadow-glow: 0 18px 50px -18px rgba(223, 161, 46, 0.55);
+  --shadow-inset-line: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+
+  /* Gradients */
+  --grad-brand: linear-gradient(135deg, #0a1830 0%, #10243f 48%, #1c3c66 100%);
+  --grad-gold: linear-gradient(135deg, #f6cd72 0%, #dfa12e 100%);
+  --grad-accent: linear-gradient(135deg, #12a594 0%, #2f6fed 100%);
+  --grad-surface: linear-gradient(180deg, #ffffff 0%, #f5f7fb 100%);
+  --grad-sheen: linear-gradient(120deg, rgba(255, 255, 255, 0) 20%, rgba(255, 255, 255, 0.35) 50%, rgba(255, 255, 255, 0) 80%);
+
+  /* Layout rhythm */
+  --section-y: clamp(3rem, 7vw, 5.5rem);
 }
 
 @media (prefers-reduced-motion: reduce) {
   * {
     animation: none !important;
     transition: none !important;
+  }
+  /* Content must never be left invisible when motion is disabled. */
+  .reveal,
+  .reveal-left,
+  .reveal-right,
+  .reveal-scale,
+  .reveal-mask {
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
   }
 }

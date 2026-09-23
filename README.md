@@ -74,7 +74,7 @@ docs/                   setup, deploy, security, staff guides (EN/HI)
 
 ## Documentation
 
-- [Local development](docs/LOCAL_DEV.md)
+- [Local development](docs/LOCAL_DEV.md) · [Customization & branding](docs/CUSTOMIZATION.md)
 - [Supabase setup](docs/SUPABASE_SETUP.md) · [Google OAuth](docs/GOOGLE_OAUTH.md)
 - [Environment variables](docs/ENV_GUIDE.md) · [Netlify deploy](docs/NETLIFY_DEPLOY.md)
 - [RLS explainer](docs/RLS_EXPLAINER.md) · [Storage policies](docs/STORAGE_POLICIES.md)
