@@ -5,6 +5,9 @@
 ### Your dashboard
 - **Pending approvals** — approve new teachers (or another principal), or reject them.
 - **Staff** — suspend or reinstate any approved account.
+- **Classes & sections** — add a new class (e.g. Class 11/12) or section, or
+  remove an unused one. An entry that still has notices, homework, messages or
+  teachers attached cannot be removed — reassign or archive those first.
 - **Parent messages** — you see all messages first. Phone numbers are masked in
   the list. Assign specific teachers to a message when you need their help; they
   can then read only that message, and cannot reassign, export, or delete it.
@@ -17,7 +20,8 @@
 - **Chatbot (Sensei)** — enable/disable and edit FAQs.
 
 ### Golden rules
-- Access is decided by approval, not by signing in. A Google login alone grants nothing.
+- Access is decided by approval, not by signing in. Creating an account (or
+  signing in) grants nothing on its own.
 - Never publish real children's names/photos in demo/test data.
 - The site never shows fees; it points people to the office.
 
@@ -27,6 +31,9 @@
 - **लंबित स्वीकृतियाँ** — नए शिक्षकों (या किसी अन्य प्रधानाचार्य) को स्वीकृत करें, या
   अस्वीकार करें।
 - **स्टाफ** — किसी भी स्वीकृत खाते को निलंबित या पुनः बहाल करें।
+- **कक्षाएँ एवं अनुभाग** — नई कक्षा (जैसे कक्षा 11/12) या नया अनुभाग जोड़ें, या
+  अप्रयुक्त को हटाएँ। जिससे सूचनाएँ, गृहकार्य, संदेश या शिक्षक जुड़े हों उसे हटाया
+  नहीं जा सकता — पहले उन्हें पुनः निर्धारित या संग्रहित करें।
 - **अभिभावक संदेश** — सभी संदेश पहले आप देखते हैं। सूची में फ़ोन नंबर छिपे रहते हैं।
   आवश्यकता होने पर किसी संदेश के लिए विशेष शिक्षक नियुक्त करें; वे केवल वही संदेश
   पढ़ सकेंगे, और उसे पुनः सौंप/निर्यात/हटा नहीं सकते।
@@ -39,6 +46,7 @@
 - **चैटबॉट (सेंसेई)** — सक्षम/अक्षम करें और FAQ संपादित करें।
 
 ### स्वर्णिम नियम
-- पहुँच स्वीकृति से तय होती है, केवल साइन इन से नहीं। अकेले Google लॉगिन कुछ नहीं देता।
+- पहुँच स्वीकृति से तय होती है, केवल साइन इन से नहीं। केवल खाता बनाना या साइन इन
+  करना कुछ नहीं देता।
 - डेमो/परीक्षण डेटा में असली बच्चों के नाम/फ़ोटो कभी प्रकाशित न करें।
 - वेबसाइट कभी शुल्क नहीं दिखाती; लोगों को कार्यालय की ओर निर्देशित करती है।

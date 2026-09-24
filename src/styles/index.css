@@ -17,6 +17,12 @@
   html {
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
+    /* Safety net for stray wide content (long emails, long words). The layout
+       itself is fixed to fit mobile — this only prevents a 1px overflow from
+       making the whole page horizontally scrollable. `clip` (unlike `hidden`)
+       does not create a scroll container, so the sticky header keeps working. */
+    overflow-x: hidden;
+    overflow-x: clip;
   }
   body {
     background-color: var(--color-bg);
@@ -24,6 +30,9 @@
     font-family: 'Inter', 'Noto Sans Devanagari', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    /* Long unbroken strings (e-mail addresses, URLs) wrap instead of
+       overflowing their container on narrow screens. */
+    overflow-wrap: break-word;
   }
   /* Devanagari content gets the Devanagari-first stack. */
   [lang='hi'] {

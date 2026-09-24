@@ -1,14 +1,18 @@
 import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { Facebook, Instagram, Mail, Phone, MapPin, ArrowUp, GraduationCap } from 'lucide-react';
+import { Trans, useTranslation } from 'react-i18next';
+import { Facebook, Instagram, Mail, Phone, MapPin, ArrowUp, GraduationCap, Code2 } from 'lucide-react';
 import { useSettings } from '@/lib/hooks/useSettings';
 import { useBrandingUrl } from '@/lib/branding';
+import { DEVELOPER, developerHost } from '@/lib/developer';
+import { useDeveloperUrl } from '@/lib/hooks/useDeveloperUrl';
 
 /** Footer. Deliberately NO WhatsApp button/number (not provided). */
 export function Footer() {
   const { t } = useTranslation();
   const { data: s } = useSettings();
   const logo = useBrandingUrl('logo');
+  // Renders instantly with the primary URL; the check only ever refines it.
+  const developerUrl = useDeveloperUrl();
   const name = s?.name_en ?? 'View Point Public School';
 
   return (
@@ -63,7 +67,7 @@ export function Footer() {
               {s?.address && (
                 <span className="flex items-start gap-2">
                   <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" aria-hidden />
-                  <span className="text-white/70">{s.address}</span>
+                  <span className="min-w-0 break-words text-white/70">{s.address}</span>
                 </span>
               )}
               {s?.phone && (
@@ -75,7 +79,7 @@ export function Footer() {
               {s?.email && (
                 <a href={`mailto:${s.email}`} className="flex items-center gap-2 text-white/70 transition-colors hover:text-amber-300">
                   <Mail className="h-4 w-4 shrink-0 text-amber-300" aria-hidden />
-                  {s.email}
+                  <span className="min-w-0 break-all">{s.email}</span>
                 </a>
               )}
               {s?.office_hours && <span className="text-white/50">{s.office_hours}</span>}
@@ -129,9 +133,35 @@ export function Footer() {
 
         <div className="relative border-t border-white/10 py-5">
           <div className="container-page flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
-            <p className="text-xs text-white/50">
-              © {new Date().getFullYear()} {name}. {t('contact.feeNote')}
-            </p>
+            <div className="min-w-0 space-y-1.5">
+              <p className="text-xs text-white/50">
+                © {new Date().getFullYear()} {name}. {t('contact.feeNote')}
+              </p>
+              {/*
+                Developer credit. The link is rendered immediately from the
+                static configuration (see src/lib/developer.ts) and is only
+                switched to the fallback URL if the availability check says the
+                primary domain is not serving the developer's own site.
+              */}
+              <p className="flex flex-wrap items-center gap-x-1.5 text-xs text-white/60">
+                <Code2 className="h-3.5 w-3.5 text-amber-300" aria-hidden />
+                <Trans
+                  i18nKey="footer.developerCredit"
+                  values={{ name: DEVELOPER.name }}
+                  components={{
+                    link: (
+                      <a
+                        href={developerUrl}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        className="font-semibold text-white/85 underline decoration-amber/50 decoration-2 underline-offset-4 transition-colors hover:text-amber-300"
+                      />
+                    ),
+                  }}
+                />
+                <span className="text-white/35">{developerHost(developerUrl)}</span>
+              </p>
+            </div>
             <button
               type="button"
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}

@@ -56,6 +56,46 @@ export const senseiChatSchema = z.object({
 });
 export type SenseiChatInput = z.infer<typeof senseiChatSchema>;
 
+/**
+ * Auth schemas (e-mail + password only — the project deliberately has NO OAuth
+ * provider). Shared with the React forms so validation is identical everywhere.
+ */
+export const emailField = z.string().trim().min(3).max(160).email();
+
+/** Supabase's own minimum is 6; we ask for 8 and cap at 72 (bcrypt limit). */
+export const passwordField = z.string().min(8).max(72);
+
+export const signInSchema = z.object({
+  email: emailField,
+  password: z.string().min(1).max(72),
+});
+export type SignInInput = z.infer<typeof signInSchema>;
+
+export const signUpSchema = z
+  .object({
+    full_name: z.string().trim().min(2).max(120),
+    email: emailField,
+    password: passwordField,
+    confirm: z.string(),
+  })
+  .refine((d) => d.password === d.confirm, { path: ['confirm'], message: 'password_mismatch' });
+export type SignUpInput = z.infer<typeof signUpSchema>;
+
+export const resetRequestSchema = z.object({ email: emailField });
+export type ResetRequestInput = z.infer<typeof resetRequestSchema>;
+
+export const newPasswordSchema = z
+  .object({ password: passwordField, confirm: z.string() })
+  .refine((d) => d.password === d.confirm, { path: ['confirm'], message: 'password_mismatch' });
+export type NewPasswordInput = z.infer<typeof newPasswordSchema>;
+
+/**
+ * Classes & sections management (principal only; RLS enforces the write).
+ * A class name is a short label such as "11", "Nursery" or "LKG".
+ */
+export const classNameSchema = z.string().trim().min(1).max(20);
+export const sectionNameSchema = z.string().trim().min(1).max(8);
+
 export const approveTeacherSchema = z.object({
   userId: uuid,
   action: z.enum(['approved', 'rejected', 'suspended']),

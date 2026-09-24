@@ -12,6 +12,7 @@ of places. You should never have to hunt through components to rebrand the site.
 | Reusable UI classes & animations | `src/styles/index.css` | `.card`, `.btn-*`, `.reveal`, … |
 | School name, tagline, address, facility list | Supabase `school_settings` row (admin dashboard) | Editable, never hard-coded |
 | Uploaded logo / favicon / share image | Supabase `branding_assets` + `branding` storage bucket | |
+| Footer developer credit | `src/lib/developer.ts` | Name + link, checked before use |
 
 ---
 
@@ -69,6 +70,25 @@ inferred from the extension automatically.
 
 > Tip: if a changed icon seems stuck, it is almost always browser cache. Try a
 > private window before assuming the change failed.
+
+---
+
+## Footer developer credit
+
+All three values live in **`src/lib/developer.ts`** — `name`, `primaryUrl`,
+`fallbackUrl` (plus `marker` and the cache/probe timeouts). Change them there and
+the footer, the availability check and this guide stay consistent.
+
+The credit renders **immediately** from `primaryUrl` and never waits for the
+network, so it cannot slow down or break the page. In the background
+`netlify/functions/developer-status.ts` fetches `primaryUrl` and only keeps it if
+the response is HTML that contains `marker`; otherwise the link falls back to
+`fallbackUrl`. DNS alone is never treated as proof — a domain can resolve while
+serving a parking page or someone else's content.
+
+To remove the credit entirely, delete the `<Trans …>` block at the bottom of
+`src/components/Footer.tsx` (and you may then delete `src/lib/developer.ts`,
+`src/lib/hooks/useDeveloperUrl.ts` and `netlify/functions/developer-status.ts`).
 
 ---
 

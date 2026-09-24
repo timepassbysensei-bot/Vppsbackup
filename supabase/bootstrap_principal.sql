@@ -3,8 +3,10 @@
 --
 -- There is deliberately NO frontend path to claim the principal role. To create
 -- the first principal:
---   1. Have the person sign in once with Google at /admin/login. This creates
---      their auth.users row and a pending user_roles row (via the app).
+--   1. Have the person register once at /admin/login ("Create account", e-mail +
+--      password), or create the user directly in Supabase. Either way the
+--      handle_new_user trigger (0005_auth_signup.sql) creates their auth.users
+--      row plus a pending profiles/user_roles row — never an approved one.
 --   2. Find their user id (email is in auth.users).
 --   3. Run THIS script in the Supabase SQL editor (service role) with their id.
 --

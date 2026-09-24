@@ -43,8 +43,10 @@ export function Header() {
   const navText = (isActive: boolean) =>
     isActive ? 'text-navy' : 'text-text/70 hover:text-navy';
 
+  // `min-w-0` + `truncate` let the brand shrink instead of pushing the language
+  // switcher and hamburger off-screen, however long the school name is.
   const Brand = (
-    <Link to="/" className="flex items-center gap-2.5" aria-label={nameEn}>
+    <Link to="/" className="flex min-w-0 items-center gap-2.5" aria-label={nameEn}>
       <span className="grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-xl bg-gradient-to-br from-navy-600 to-navy-900 text-white shadow-md">
         {logo ? (
           <img src={logo} alt="" className="h-full w-full object-cover" />
@@ -52,12 +54,10 @@ export function Header() {
           <GraduationCap className="h-5 w-5" aria-hidden />
         )}
       </span>
-      <span className="flex flex-col leading-tight">
-        <span className="max-w-[11rem] truncate text-sm font-bold text-navy sm:max-w-none sm:text-base">
-          {nameEn}
-        </span>
+      <span className="flex min-w-0 flex-col leading-tight">
+        <span className="truncate text-sm font-bold text-navy sm:text-base">{nameEn}</span>
         {nameHi && (
-          <span lang="hi" className="max-w-[11rem] truncate text-xs text-text/60 sm:max-w-none">
+          <span lang="hi" className="truncate text-xs text-text/60">
             {nameHi}
           </span>
         )}
@@ -73,7 +73,7 @@ export function Header() {
           : 'border-transparent bg-white/60 backdrop-blur-md'
       }`}
     >
-      <div className="container-page flex items-center justify-between gap-4 py-3">
+      <div className="container-page flex min-w-0 items-center justify-between gap-2 py-3 sm:gap-4">
         {Brand}
 
         {/* Desktop nav */}
@@ -106,14 +106,14 @@ export function Header() {
           </Link>
         </div>
 
-        {/* Mobile / tablet menu trigger */}
-        <div className="flex items-center gap-2 xl:hidden">
+        {/* Mobile / tablet menu trigger. `shrink-0` keeps it inside the viewport. */}
+        <div className="flex shrink-0 items-center gap-1 sm:gap-2 xl:hidden">
           <LanguageSwitcher />
           <Dialog.Root open={open} onOpenChange={setOpen}>
             <Dialog.Trigger asChild>
               <button
                 type="button"
-                className="btn-secondary min-h-touch min-w-touch px-3"
+                className="btn-secondary min-h-touch min-w-touch shrink-0 px-3"
                 aria-label={t('common.menu')}
               >
                 <Menu className="h-5 w-5" aria-hidden />

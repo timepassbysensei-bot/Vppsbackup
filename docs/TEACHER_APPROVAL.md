@@ -1,7 +1,10 @@
 # Teacher approval
 
-Registration is self-service (Google); **access is not**. Every new account is
-`pending` and sees only the waiting screen until the principal acts.
+Registration is self-service (**e-mail + password**; no Google/OAuth); **access
+is not**. Every new account is `pending` and sees only the waiting screen until
+the principal acts. The pending row is created by the `handle_new_user` database
+trigger (`0005_auth_signup.sql`), never by the browser — which is why a new user
+cannot approve themselves.
 
 ## Principal actions (from the principal dashboard)
 
