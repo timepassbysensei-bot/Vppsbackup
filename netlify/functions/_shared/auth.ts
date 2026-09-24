@@ -20,7 +20,8 @@ export async function requireUser(req: Request): Promise<Caller> {
 /**
  * Verifies the caller is an approved principal. Authorization is read from the
  * authoritative `user_roles` table server-side — NEVER trusted from the JWT
- * payload or any client claim, so a Google login alone can never grant access.
+ * payload or any client claim, so signing in (or registering) alone can never
+ * grant access.
  */
 export async function requirePrincipal(req: Request): Promise<Caller> {
   const caller = await requireUser(req);

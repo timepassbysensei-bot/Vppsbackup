@@ -1,5 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="VPPS">
-  <rect width="64" height="64" rx="12" fill="#0f2a52" />
-  <text x="32" y="42" font-family="Inter, system-ui, sans-serif" font-size="26" font-weight="700"
-        text-anchor="middle" fill="#ffffff">VP</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="View Point Public School">
+  <defs>
+    <linearGradient id="vpps-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#17356a" />
+      <stop offset="0.55" stop-color="#10243f" />
+      <stop offset="1" stop-color="#0a1830" />
+    </linearGradient>
+    <linearGradient id="vpps-gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f6cd72" />
+      <stop offset="1" stop-color="#dfa12e" />
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="15" fill="url(#vpps-bg)" />
+  <path d="M0 44c10-6 20-6 30 0s18 8 34 2v18H0z" fill="#ffffff" opacity="0.05" />
+  <text x="32" y="41" text-anchor="middle" font-family="Inter, system-ui, -apple-system, Segoe UI, sans-serif"
+        font-size="25" font-weight="700" letter-spacing="0.5" fill="#ffffff">VP</text>
+  <rect x="18" y="46" width="28" height="3.5" rx="1.75" fill="url(#vpps-gold)" />
 </svg>

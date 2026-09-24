@@ -5,9 +5,16 @@ Plain-language guide for teachers. / शिक्षकों के लिए �
 ## English
 
 ### Signing in
-1. Go to **Teacher Login** and continue with your school Google account.
-2. The first time, your account is **pending**. The principal must approve you.
+1. Go to **Teacher Login**. If you don't have an account yet, choose **Create
+   account** and register with your **e-mail address and a password** (at least 8
+   characters). There is no Google sign-in.
+2. If the school asks you to confirm your e-mail, click the link in the message
+   we send you, then sign in.
+3. The first time, your account is **pending**. The principal must approve you.
    You'll see a waiting screen until then — this is normal.
+
+Forgot your password? Use **Forgot password?** on the login page to set a new
+one by e-mail.
 
 ### What you can do (once approved)
 - **Homework** — upload homework for the class/section you are assigned to. You
@@ -27,9 +34,16 @@ Plain-language guide for teachers. / शिक्षकों के लिए �
 ## हिन्दी
 
 ### साइन इन कैसे करें
-1. **शिक्षक लॉगिन** पर जाएँ और अपने विद्यालय के Google खाते से जारी रखें।
-2. पहली बार आपका खाता **लंबित (pending)** रहेगा। प्रधानाचार्य को इसे स्वीकृत करना
+1. **शिक्षक लॉगिन** पर जाएँ। यदि खाता नहीं है तो **खाता बनाएँ** चुनें और अपने
+   **ईमेल पते और पासवर्ड** (कम से कम 8 अक्षर) से पंजीकरण करें। Google से साइन इन
+   की सुविधा नहीं है।
+2. यदि विद्यालय आपसे ईमेल सत्यापन माँगता है, तो भेजे गए संदेश में दिए लिंक पर
+   क्लिक करें, फिर साइन इन करें।
+3. पहली बार आपका खाता **लंबित (pending)** रहेगा। प्रधानाचार्य को इसे स्वीकृत करना
    होगा। तब तक आपको प्रतीक्षा स्क्रीन दिखेगी — यह सामान्य है।
+
+पासवर्ड भूल गए? लॉगिन पेज पर **पासवर्ड भूल गए?** का उपयोग करके ईमेल द्वारा नया
+पासवर्ड बनाएँ।
 
 ### आप क्या कर सकते हैं (स्वीकृति के बाद)
 - **गृहकार्य** — अपनी निर्धारित कक्षा/अनुभाग के लिए गृहकार्य अपलोड करें। हाल के

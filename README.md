@@ -22,7 +22,8 @@ Netlify Functions (privileged server ops)
   → Gemini (Sensei) · Resend (email) · Turnstile verify
 ```
 
-- One app, one auth system, role-based dashboards (`/admin/teacher`, `/admin/principal`).
+- One app, one auth system — Supabase Auth with **e-mail + password only** (no OAuth
+  provider), role-based dashboards (`/admin/teacher`, `/admin/principal`).
 - The browser never holds the service-role / Gemini / Resend keys.
 - Any privileged operation goes through a Netlify Function that re-checks auth + authorization.
 
@@ -67,6 +68,7 @@ src/                    React SPA (public + admin)
 netlify/functions/      privileged server ops (service-role lives here only)
   _shared/              handler, auth, cors, rateLimit, supabase, sensei-config, ...
 supabase/migrations/    0001_schema · 0002_rls · 0003_storage · 0004_functions
+                        0005_auth_signup · 0006_classes_admin
 supabase/seed.sql       verified facts + clearly-marked demo data
 tests/                  unit · integration · e2e · rls · security
 docs/                   setup, deploy, security, staff guides (EN/HI)
@@ -74,8 +76,8 @@ docs/                   setup, deploy, security, staff guides (EN/HI)
 
 ## Documentation
 
-- [Local development](docs/LOCAL_DEV.md)
-- [Supabase setup](docs/SUPABASE_SETUP.md) · [Google OAuth](docs/GOOGLE_OAUTH.md)
+- [Local development](docs/LOCAL_DEV.md) · [Customization & branding](docs/CUSTOMIZATION.md)
+- [Supabase setup](docs/SUPABASE_SETUP.md) · [Authentication (e-mail + password)](docs/AUTH_SETUP.md)
 - [Environment variables](docs/ENV_GUIDE.md) · [Netlify deploy](docs/NETLIFY_DEPLOY.md)
 - [RLS explainer](docs/RLS_EXPLAINER.md) · [Storage policies](docs/STORAGE_POLICIES.md)
 - [Principal bootstrap](docs/PRINCIPAL_BOOTSTRAP.md) · [Teacher approval](docs/TEACHER_APPROVAL.md)

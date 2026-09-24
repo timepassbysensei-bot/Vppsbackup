@@ -21,7 +21,7 @@ export function AchievementsPage() {
           <EmptyState />
         ) : (
           <div className="card p-6">
-            <p className="text-sm font-semibold text-amber">{spotlight.award_title}</p>
+            <p className="text-sm font-semibold text-amber-700">{spotlight.award_title}</p>
             <p className="mt-1 text-xl font-semibold">{spotlight.display_name}</p>
             {(() => {
               const w = pickLocalized(lang, spotlight.writeup_en, spotlight.writeup_hi);

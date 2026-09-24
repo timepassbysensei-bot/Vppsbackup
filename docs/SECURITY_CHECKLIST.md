@@ -48,7 +48,9 @@ Run this list before every production deploy.
 ## Headers / transport
 - [ ] CSP, HSTS, nosniff, Referrer-Policy, Permissions-Policy, COOP/CORP present.
 - [ ] `connect-src` does NOT include Gemini/Resend (browser never calls them).
-- [ ] OAuth redirect allowlist restricted to known origins.
+- [ ] Supabase Auth redirect allowlist restricted to known origins
+      (`/admin/login`, `/admin/reset` only — no wildcards). No OAuth provider is
+      enabled.
 
 ## Turnstile
 - [ ] Missing/invalid/reused tokens are rejected (fail closed).

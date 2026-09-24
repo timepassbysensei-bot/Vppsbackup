@@ -14,10 +14,12 @@ SQL so you can paste it into the Supabase SQL editor or run it with the CLI.
 ## 2. Run the migrations (in order)
 
 ```
-supabase/migrations/0001_schema.sql     -- tables, types, triggers, audit
-supabase/migrations/0002_rls.sql        -- enable RLS + all policies
-supabase/migrations/0003_storage.sql    -- buckets + storage policies
-supabase/migrations/0004_functions.sql  -- public_birthdays() RPC
+supabase/migrations/0001_schema.sql       -- tables, types, triggers, audit
+supabase/migrations/0002_rls.sql          -- enable RLS + all policies
+supabase/migrations/0003_storage.sql      -- buckets + storage policies
+supabase/migrations/0004_functions.sql    -- public_birthdays() RPC
+supabase/migrations/0005_auth_signup.sql  -- handle_new_user() trigger (pending accounts)
+supabase/migrations/0006_classes_admin.sql -- guarded delete_class()/delete_section()
 ```
 
 With the Supabase CLI:
@@ -36,9 +38,15 @@ supabase db push        # or: psql "$DATABASE_URL" -f supabase/migrations/000X_*
 - **Section B — demo content** (development only): unpublished, clearly marked
   `[DEMO]`. Do **not** run Section B in production.
 
-## 4. Google OAuth
+## 4. Authentication (e-mail + password)
 
-Enable Google as an auth provider — see [GOOGLE_OAUTH.md](GOOGLE_OAUTH.md).
+Staff sign in with e-mail and password — there is **no OAuth/Google provider**.
+Enable the Email provider, leave Google disabled, and set the redirect allowlist.
+Full steps: [AUTH_SETUP.md](AUTH_SETUP.md).
+
+> `0005_auth_signup.sql` is required for registration to work: it creates the
+> initial `profiles` / `user_roles`(pending) / `teacher_permissions` rows, which
+> RLS deliberately prevents the browser from creating.
 
 ## 5. Bootstrap the principal
 

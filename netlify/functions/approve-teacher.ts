@@ -10,9 +10,10 @@ import { approveTeacherSchema } from '../../src/lib/validation/schemas.ts';
  * permissions, and class assignments.
  *
  * This is the ONLY place role/status changes happen, and it re-verifies
- * `is_principal()` server-side against the authoritative user_roles table. A
- * Google login alone can therefore never grant access, and no user can
- * self-promote. Every change is written to the append-only audit log.
+ * `is_principal()` server-side against the authoritative user_roles table. Being
+ * signed in can therefore never grant access, and no user can self-promote —
+ * registration only ever produces a `pending` row (see `handle_new_user`). Every
+ * change is written to the append-only audit log.
  */
 export default guard(
   'approve-teacher',

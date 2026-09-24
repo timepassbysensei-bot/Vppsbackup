@@ -50,7 +50,9 @@ security-header/CSP validation.
 
 ## Workflow tests
 
-Google registration → approval → suspension; homework upload; notice
+E-mail/password registration → pending → approval → suspension; rejected and
+suspended users still blocked; password reset via `/admin/reset`;
+homework upload; notice
 publication; timing activation; message assignment + revocation; leave
 submit/approve/reject; birthday text-only & photo; spotlight replacement;
 admissions auto open/close (Asia/Kolkata).
