@@ -96,6 +96,31 @@ export type NewPasswordInput = z.infer<typeof newPasswordSchema>;
 export const classNameSchema = z.string().trim().min(1).max(20);
 export const sectionNameSchema = z.string().trim().min(1).max(8);
 
+/**
+ * Principal-initiated staff invitation. Creates the auth account (no password —
+ * the invitee sets one through the password-recovery screen) and pre-approves
+ * the role. Handled server-side because creating auth users needs the
+ * service-role key.
+ */
+export const inviteStaffSchema = z.object({
+  email: emailField,
+  full_name: z.string().trim().min(2).max(120),
+  role: z.enum(['teacher', 'principal']).default('teacher'),
+  perms: z
+    .object({
+      can_public_notices: z.boolean().optional(),
+      can_birthdays: z.boolean().optional(),
+      can_resources: z.boolean().optional(),
+      can_spotlight: z.boolean().optional(),
+    })
+    .optional(),
+  classes: z
+    .array(z.object({ class_id: uuid, section_id: uuid.nullable() }))
+    .max(50)
+    .optional(),
+});
+export type InviteStaffInput = z.infer<typeof inviteStaffSchema>;
+
 export const approveTeacherSchema = z.object({
   userId: uuid,
   action: z.enum(['approved', 'rejected', 'suspended']),

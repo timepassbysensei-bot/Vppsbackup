@@ -1,23 +1,40 @@
 import { useQuery } from '@tanstack/react-query';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Siren } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useLang } from '@/lib/hooks/useLang';
 import { pickLocalized } from '@/lib/i18n';
 
 /**
- * Emergency alert bar. Shows the most recent published notice flagged urgent (or
- * category 'Emergency'). Principal-controlled via the notices table. Hidden when
- * there is nothing urgent, so it never nags visitors.
+ * Emergency bar. Priority:
+ *   1. an active `emergency_alerts` row (principal-controlled, expirable), else
+ *   2. the most recent urgent / Emergency-category published notice.
+ * Hidden when there is nothing urgent, so it never nags visitors.
  */
 export function AlertBar() {
   const [lang] = useLang();
-  const { data } = useQuery({
+
+  const { data: alert } = useQuery({
+    queryKey: ['emergency-alert-active'],
+    staleTime: 60_000,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('emergency_alerts')
+        .select('title, body, severity')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      return data;
+    },
+  });
+
+  const { data: notice } = useQuery({
     queryKey: ['alert-notice'],
     staleTime: 60_000,
     queryFn: async () => {
       const { data } = await supabase
         .from('public_notices')
-        .select('title_en,title_hi,is_urgent,category,priority')
+        .select('title_en,title_hi')
         .eq('is_published', true)
         .eq('audience', 'public')
         .eq('is_deleted', false)
@@ -29,8 +46,21 @@ export function AlertBar() {
     },
   });
 
-  if (!data) return null;
-  const { text } = pickLocalized(lang, data.title_en, data.title_hi);
+  if (alert) {
+    return (
+      <div role="alert" className="bg-danger text-white">
+        <div className="container-page flex items-center gap-2 py-2 text-sm font-medium">
+          <Siren className="h-4 w-4 shrink-0" aria-hidden />
+          <span>
+            <strong>{alert.title}</strong> — {alert.body}
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!notice) return null;
+  const { text } = pickLocalized(lang, notice.title_en, notice.title_hi);
 
   return (
     <div role="alert" className="bg-danger text-white">

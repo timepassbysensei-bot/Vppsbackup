@@ -69,6 +69,8 @@ netlify/functions/      privileged server ops (service-role lives here only)
   _shared/              handler, auth, cors, rateLimit, supabase, sensei-config, ...
 supabase/migrations/    0001_schema · 0002_rls · 0003_storage · 0004_functions
                         0005_auth_signup · 0006_classes_admin
+                        0007_restore_modules (dashboards: gallery, timing,
+                        alerts, threads, SoTM approval, upload limits)
 supabase/seed.sql       verified facts + clearly-marked demo data
 tests/                  unit · integration · e2e · rls · security
 docs/                   setup, deploy, security, staff guides (EN/HI)
@@ -83,6 +85,7 @@ docs/                   setup, deploy, security, staff guides (EN/HI)
 - [Principal bootstrap](docs/PRINCIPAL_BOOTSTRAP.md) · [Teacher approval](docs/TEACHER_APPROVAL.md)
 - [Sensei FAQ updates](docs/SENSEI_FAQ.md) · [Timing updates](docs/TIMING_UPDATE.md)
 - [Security checklist](docs/SECURITY_CHECKLIST.md) · [Privacy checklist](docs/PRIVACY_CHECKLIST.md)
+- [Feature-parity audit](docs/feature-parity-audit.md)
 - [Testing guide](docs/TESTING_GUIDE.md)
 - Staff guides: [Teacher](docs/TEACHER_GUIDE.md) · [Principal](docs/PRINCIPAL_GUIDE.md)
 
