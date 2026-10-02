@@ -36,6 +36,17 @@ export default guard(
 
     const admin = adminClient();
 
+    // Only touch an account that actually has a role row. A registration whose
+    // row is missing is repaired first (see repair-registrations), so approval
+    // can never silently no-op on an invisible account.
+    const { data: existing, error: readErr } = await admin
+      .from('user_roles')
+      .select('user_id, status')
+      .eq('user_id', d.userId)
+      .maybeSingle();
+    if (readErr) return json(500, { error: 'server_error' });
+    if (!existing) return json(404, { error: 'registration_not_found' });
+
     const { error: roleErr } = await admin
       .from('user_roles')
       .update({
@@ -77,7 +88,7 @@ export default guard(
       action: `teacher_${d.action}`,
       content_type: 'user_role',
       content_id: d.userId,
-      summary: `role=${d.role ?? 'teacher'}`,
+      summary: `role=${d.role ?? 'teacher'}${d.reason ? ` reason=${d.reason}` : ''}`,
     });
 
     logInternal('approve-teacher:ok', { action: d.action });

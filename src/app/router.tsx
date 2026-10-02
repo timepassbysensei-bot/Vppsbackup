@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { PublicLayout } from './PublicLayout';
-import { RequireApproved, RequirePrincipal } from './guards';
+import { RequirePrincipal, RequireTeacherAccess } from './guards';
 
 import { HomePage } from '@/pages/public/HomePage';
 import { AboutPage } from '@/pages/public/AboutPage';
@@ -88,12 +88,13 @@ export function AppRouter() {
         {/* Landing page for the Supabase password-recovery e-mail link. */}
         <Route path="/admin/reset" element={<ResetPasswordPage />} />
         <Route path="/admin/pending" element={<PendingPage />} />
+        {/* An approved teacher OR an approved principal (supervisory access). */}
         <Route
           path="/admin/teacher"
           element={
-            <RequireApproved>
+            <RequireTeacherAccess>
               <TeacherDashboard />
-            </RequireApproved>
+            </RequireTeacherAccess>
           }
         />
         <Route

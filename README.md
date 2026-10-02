@@ -71,6 +71,9 @@ supabase/migrations/    0001_schema · 0002_rls · 0003_storage · 0004_function
                         0005_auth_signup · 0006_classes_admin
                         0007_restore_modules (dashboards: gallery, timing,
                         alerts, threads, SoTM approval, upload limits)
+                        0008_principal_access_and_audit (teacher-content audit
+                        triggers + safe backfill for accounts created before
+                        the signup trigger existed)
 supabase/seed.sql       verified facts + clearly-marked demo data
 tests/                  unit · integration · e2e · rls · security
 docs/                   setup, deploy, security, staff guides (EN/HI)
@@ -83,6 +86,7 @@ docs/                   setup, deploy, security, staff guides (EN/HI)
 - [Environment variables](docs/ENV_GUIDE.md) · [Netlify deploy](docs/NETLIFY_DEPLOY.md)
 - [RLS explainer](docs/RLS_EXPLAINER.md) · [Storage policies](docs/STORAGE_POLICIES.md)
 - [Principal bootstrap](docs/PRINCIPAL_BOOTSTRAP.md) · [Teacher approval](docs/TEACHER_APPROVAL.md)
+  · [Registration repair](docs/REGISTRATION_REPAIR.md)
 - [Sensei FAQ updates](docs/SENSEI_FAQ.md) · [Timing updates](docs/TIMING_UPDATE.md)
 - [Security checklist](docs/SECURITY_CHECKLIST.md) · [Privacy checklist](docs/PRIVACY_CHECKLIST.md)
 - [Feature-parity audit](docs/feature-parity-audit.md)

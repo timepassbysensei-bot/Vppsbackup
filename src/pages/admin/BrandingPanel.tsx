@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { ImageUp, Loader2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
@@ -21,11 +21,18 @@ function safeExt(name: string): string {
  * branding_assets, so a non-principal cannot mutate this even if they reach it.
  * Uploaded files use a unique filename so CDNs/browsers never serve a stale icon.
  */
-export function BrandingPanel() {
+export function BrandingPanel({ initialSection }: { initialSection?: 'logo' | 'favicon' }) {
   const qc = useQueryClient();
   const { data: branding } = useBranding();
   const [busy, setBusy] = useState<BrandingKey | null>(null);
   const [message, setMessage] = useState<{ kind: 'ok' | 'error'; text: string } | null>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+
+  // "Change logo" / "Change favicon" jump straight to the slot they name and
+  // highlight it, so those module buttons are not dead ends.
+  useEffect(() => {
+    if (initialSection) sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [initialSection]);
 
   async function upload(key: 'favicon' | 'logo', file: File | undefined) {
     if (!file) return;
@@ -70,7 +77,7 @@ export function BrandingPanel() {
   }
 
   return (
-    <section className="card mt-6 p-5">
+    <section ref={sectionRef} className="card mt-6 scroll-mt-20 p-5">
       <h2 className="font-semibold text-navy">Branding</h2>
       <p className="mt-1 text-sm text-text/60">
         Upload the school logo and browser-tab favicon. Changes appear across the public site.
@@ -82,6 +89,7 @@ export function BrandingPanel() {
           slot="logo"
           preview={branding?.resolved.logo ?? null}
           busy={busy === 'logo'}
+          highlight={initialSection === 'logo'}
           onPick={(f) => void upload('logo', f)}
         />
         <BrandingSlot
@@ -89,6 +97,7 @@ export function BrandingPanel() {
           slot="favicon"
           preview={branding?.resolved.favicon ?? null}
           busy={busy === 'favicon'}
+          highlight={initialSection === 'favicon'}
           onPick={(f) => void upload('favicon', f)}
         />
       </div>
@@ -107,18 +116,20 @@ function BrandingSlot({
   slot,
   preview,
   busy,
+  highlight = false,
   onPick,
 }: {
   label: string;
   slot: 'favicon' | 'logo';
   preview: string | null;
   busy: boolean;
+  highlight?: boolean;
   onPick: (file: File | undefined) => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <div className="rounded-lg border border-black/10 p-4">
+    <div className={`rounded-lg border border-black/10 p-4 ${highlight ? 'ring-2 ring-amber/60' : ''}`}>
       <div className="flex items-center gap-3">
         <span className="grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-md bg-surface ring-1 ring-black/5">
           {preview ? (

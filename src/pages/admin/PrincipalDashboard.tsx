@@ -1,27 +1,40 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
+  ArrowLeftRight,
+  Award,
   BarChart3,
   Bell,
   BookOpen,
+  Building2,
   CalendarDays,
   ClipboardList,
+  Cog,
+  Contact,
   FileText,
   Image as ImageIcon,
+  Layers,
   LayoutGrid,
-  MessageSquare,
+  Mail,
   Megaphone,
+  Palette,
   Quote,
+  ScrollText,
   Settings,
   ShieldCheck,
   Trophy,
   UserCheck,
+  UserCog,
   Users,
+  Wand2,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { AdminShell, type NavGroup } from '@/app/AdminShell';
-import { Panel, Pill } from '@/components/admin/kit';
-import { RegistrationsPanel, StaffPanel } from './principal/PeoplePanels';
+import { ModuleGrid, ModuleSection, type ModuleItem } from '@/components/admin/ModuleGrid';
+import { Panel } from '@/components/admin/kit';
+import { pendingRegistrations, useStaff } from '@/lib/hooks/useStaff';
+import { AssignmentsPanel, RegistrationsPanel, StaffPanel } from './principal/PeoplePanels';
 import {
   AdmissionsPanel,
   InternalNoticesPanel,
@@ -42,27 +55,31 @@ import {
   GalleryPanel,
 } from './principal/MediaPanels';
 import { AuditLogPanel, SchoolSettingsPanel, TimingPanel } from './principal/SettingsPanels';
+import { BrandingPanel } from './BrandingPanel';
+import { ClassesPanel } from './ClassesPanel';
 
 /**
  * Principal dashboard.
  *
- * Groups every module (old + new) behind a responsive sidebar/drawer so nothing
- * is buried at the bottom of one giant page. Each module enforces its own RLS —
- * this component only decides what to render, never what a user may do.
+ * Layout follows the original site: every module is a button visible directly on
+ * the page (two columns on a phone), with the active module rendered underneath.
+ * The mobile drawer and the desktop sidebar still exist, but only as secondary
+ * navigation — nothing is reachable *only* through them.
+ *
+ * Route/visibility here is UX only. Every read and write is independently
+ * enforced by Postgres RLS and by the Netlify Functions, so a user who bypasses
+ * the UI still cannot do anything they are not authorized for.
  */
 export function PrincipalDashboard() {
   const [active, setActive] = useState('overview');
 
-  const { data: pending } = useQuery({
-    queryKey: ['badge-pending'],
-    queryFn: async () => {
-      const { count: c } = await supabase
-        .from('user_roles')
-        .select('*', { count: 'exact', head: true })
-        .eq('status', 'pending');
-      return c ?? 0;
-    },
-  });
+  // The SAME hook and cache key the Pending Registrations page uses, so the
+  // badge count can never disagree with the list. (It previously used a separate
+  // one-off count query with its own cache key — that is how "badge 1 / list
+  // empty" became possible.)
+  const { data: staff } = useStaff();
+  const pendingCount = pendingRegistrations(staff).length;
+
   const { data: unread } = useQuery({
     queryKey: ['badge-unread'],
     queryFn: async () => {
@@ -95,78 +112,91 @@ export function PrincipalDashboard() {
     },
   });
 
-  const groups: NavGroup[] = [
-    { label: 'Overview', items: [{ id: 'overview', label: 'Dashboard', icon: <LayoutGrid className="h-4 w-4" /> }] },
-    {
-      label: 'People',
-      items: [
-        { id: 'registrations', label: 'Registrations', icon: <UserCheck className="h-4 w-4" />, badge: pending },
-        { id: 'staff', label: 'Staff roster', icon: <Users className="h-4 w-4" /> },
-      ],
-    },
-    {
-      label: 'Academics',
-      items: [
-        { id: 'timing', label: 'Timing manager', icon: <BarChart3 className="h-4 w-4" /> },
-        { id: 'homework', label: 'All homework', icon: <BookOpen className="h-4 w-4" /> },
-        { id: 'classnotices', label: 'Class notices', icon: <FileText className="h-4 w-4" /> },
-        { id: 'calendar', label: 'Calendar', icon: <CalendarDays className="h-4 w-4" /> },
-      ],
-    },
-    {
-      label: 'Communication',
-      items: [
-        { id: 'parentmessages', label: 'Parent messages', icon: <MessageSquare className="h-4 w-4" />, badge: unread },
-        { id: 'leave', label: 'Leave inbox', icon: <ClipboardList className="h-4 w-4" />, badge: leavePending },
-        { id: 'internal', label: 'Staff notices', icon: <Megaphone className="h-4 w-4" /> },
-        { id: 'alerts', label: 'Emergency alert', icon: <Bell className="h-4 w-4" /> },
-      ],
-    },
-    {
-      label: 'Content',
-      items: [
-        { id: 'publicnotices', label: 'Public notices', icon: <Megaphone className="h-4 w-4" /> },
-        { id: 'resources', label: 'Resources', icon: <FileText className="h-4 w-4" /> },
-        { id: 'faq', label: 'Chatbot FAQs', icon: <Quote className="h-4 w-4" /> },
-      ],
-    },
-    {
-      label: 'Media',
-      items: [
-        { id: 'gallery', label: 'Gallery', icon: <ImageIcon className="h-4 w-4" /> },
-        { id: 'achievements', label: 'Achievements', icon: <Trophy className="h-4 w-4" />, badge: submitted },
-      ],
-    },
-    { label: 'Admissions', items: [{ id: 'admissions', label: 'Enquiries', icon: <ClipboardList className="h-4 w-4" /> }] },
-    {
-      label: 'Settings',
-      items: [
-        { id: 'settings', label: 'School settings', icon: <Settings className="h-4 w-4" /> },
-        { id: 'audit', label: 'Audit log', icon: <ShieldCheck className="h-4 w-4" /> },
-      ],
-    },
-  ];
-
   const titles: Record<string, string> = {
     overview: 'Principal dashboard',
     registrations: 'Pending registrations',
     staff: 'Staff roster',
-    timing: 'Timing manager',
+    assignments: 'Teacher assignments',
+    roles: 'Account and role management',
     homework: 'All homework',
     classnotices: 'All class notices',
+    timing: 'Timing manager',
     calendar: 'Calendar',
+    classes: 'Class and section manager',
     parentmessages: 'Parent messages',
     leave: 'Leave inbox',
-    internal: 'Staff notices',
+    internal: 'Internal notices',
     alerts: 'Emergency alert',
     publicnotices: 'Public notices',
-    resources: 'Resources',
+    resources: 'Resources manager',
     faq: 'Chatbot FAQs',
-    gallery: 'Gallery',
+    gallery: 'Gallery manager',
     achievements: 'Achievements',
+    branding: 'Branding',
+    logo: 'Change logo',
+    favicon: 'Change favicon',
     admissions: 'Admission enquiries',
     settings: 'School settings',
     audit: 'Audit log',
+  };
+
+  const people: ModuleItem[] = [
+    { id: 'registrations', label: 'Pending Registrations', icon: <UserCheck className="h-5 w-5" />, badge: pendingCount },
+    { id: 'staff', label: 'Staff Roster', icon: <Users className="h-5 w-5" /> },
+    { id: 'assignments', label: 'Teacher Assignments', icon: <Contact className="h-5 w-5" /> },
+    { id: 'roles', label: 'Account & Role Management', icon: <UserCog className="h-5 w-5" /> },
+  ];
+
+  const academics: ModuleItem[] = [
+    { id: 'homework', label: 'All Homework', icon: <BookOpen className="h-5 w-5" /> },
+    { id: 'classnotices', label: 'All Class Notices', icon: <FileText className="h-5 w-5" /> },
+    { id: 'timing', label: 'Timing Manager', icon: <BarChart3 className="h-5 w-5" /> },
+    { id: 'calendar', label: 'Calendar', icon: <CalendarDays className="h-5 w-5" /> },
+    { id: 'classes', label: 'Class & Section Manager', icon: <Layers className="h-5 w-5" /> },
+  ];
+
+  const communication: ModuleItem[] = [
+    { id: 'parentmessages', label: 'Parent Messages', icon: <Mail className="h-5 w-5" />, badge: unread },
+    { id: 'leave', label: 'Leave Inbox', icon: <ClipboardList className="h-5 w-5" />, badge: leavePending },
+    { id: 'internal', label: 'Internal Notices', icon: <Megaphone className="h-5 w-5" /> },
+    { id: 'alerts', label: 'Emergency Alert', icon: <Bell className="h-5 w-5" /> },
+  ];
+
+  const content: ModuleItem[] = [
+    { id: 'publicnotices', label: 'Public Notices', icon: <ScrollText className="h-5 w-5" /> },
+    { id: 'resources', label: 'Resources Manager', icon: <FileText className="h-5 w-5" /> },
+    { id: 'gallery', label: 'Gallery Manager', icon: <ImageIcon className="h-5 w-5" /> },
+    { id: 'achievements', label: 'Achievements', icon: <Trophy className="h-5 w-5" />, badge: submitted },
+    { id: 'faq', label: 'Chatbot FAQs', icon: <Quote className="h-5 w-5" /> },
+    { id: 'branding', label: 'Branding', icon: <Palette className="h-5 w-5" /> },
+    { id: 'logo', label: 'Change Logo', icon: <Wand2 className="h-5 w-5" /> },
+    { id: 'favicon', label: 'Change Favicon', icon: <Award className="h-5 w-5" /> },
+  ];
+
+  const admissions: ModuleItem[] = [
+    { id: 'admissions', label: 'Admission Enquiries', icon: <Building2 className="h-5 w-5" /> },
+  ];
+
+  const settingsModules: ModuleItem[] = [
+    { id: 'settings', label: 'School Settings', icon: <Settings className="h-5 w-5" /> },
+    { id: 'audit', label: 'Audit Log', icon: <ShieldCheck className="h-5 w-5" /> },
+  ];
+
+  const groups: NavGroup[] = [
+    { label: 'Overview', items: [{ id: 'overview', label: 'Dashboard', icon: <LayoutGrid className="h-4 w-4" /> }] },
+    { label: 'People', items: people },
+    { label: 'Academics', items: academics },
+    { label: 'Communication', items: communication },
+    { label: 'Content & media', items: content },
+    { label: 'Admissions', items: admissions },
+    { label: 'Settings', items: settingsModules },
+  ];
+
+  const counts = {
+    pending: pendingCount,
+    unread: unread ?? 0,
+    leave: leavePending ?? 0,
+    submitted: submitted ?? 0,
   };
 
   return (
@@ -175,28 +205,61 @@ export function PrincipalDashboard() {
       groups={groups}
       active={active}
       onSelect={setActive}
+      homeLabel="Dashboard"
+      headerRight={
+        <Link to="/admin/teacher" className="btn-secondary">
+          <ArrowLeftRight className="h-4 w-4" aria-hidden />
+          Teacher Dashboard
+        </Link>
+      }
     >
-      {active === 'overview' && (
-        <Overview
-          onGo={setActive}
-          counts={{ pending: pending ?? 0, unread: unread ?? 0, leave: leavePending ?? 0, submitted: submitted ?? 0 }}
-        />
-      )}
+      <Panel
+        title="Principal modules"
+        description="Tap a module to open it below. Counts show what is waiting for a decision."
+      >
+        <ModuleSection title="People">
+          <ModuleGrid items={people} active={active} onSelect={setActive} ariaLabel="People modules" />
+        </ModuleSection>
+        <ModuleSection title="Academics">
+          <ModuleGrid items={academics} active={active} onSelect={setActive} ariaLabel="Academics modules" />
+        </ModuleSection>
+        <ModuleSection title="Communication">
+          <ModuleGrid items={communication} active={active} onSelect={setActive} ariaLabel="Communication modules" />
+        </ModuleSection>
+        <ModuleSection title="Content and media">
+          <ModuleGrid items={content} active={active} onSelect={setActive} ariaLabel="Content modules" />
+        </ModuleSection>
+        <ModuleSection title="Admissions">
+          <ModuleGrid items={admissions} active={active} onSelect={setActive} ariaLabel="Admissions modules" />
+        </ModuleSection>
+        <ModuleSection title="Settings">
+          <ModuleGrid items={settingsModules} active={active} onSelect={setActive} ariaLabel="Settings modules" />
+        </ModuleSection>
+      </Panel>
+
+      {active === 'overview' && <Overview counts={counts} onGo={setActive} />}
       {active === 'registrations' && <RegistrationsPanel />}
       {active === 'staff' && <StaffPanel />}
+      {active === 'assignments' && <AssignmentsPanel />}
+      {/* Role/permission changes live in the staff roster's manage panel. */}
+      {active === 'roles' && <StaffPanel />}
       {active === 'timing' && <TimingPanel />}
       {active === 'homework' && <HomeworkAdminPanel />}
       {active === 'classnotices' && <ClassNoticesAdminPanel />}
       {active === 'calendar' && <CalendarPanel />}
+      {active === 'classes' && <ClassesPanel />}
       {active === 'parentmessages' && <ParentMessagesPanel />}
       {active === 'leave' && <LeaveInboxPanel />}
       {active === 'internal' && <InternalNoticesPanel />}
       {active === 'alerts' && <EmergencyAlertPanel />}
       {active === 'publicnotices' && <PublicNoticesPanel />}
       {active === 'resources' && <ResourcesPanel />}
-      {active === 'faq' && <FaqPanel />}
       {active === 'gallery' && <GalleryPanel />}
       {active === 'achievements' && <AchievementsPanel />}
+      {active === 'faq' && <FaqPanel />}
+      {active === 'branding' && <BrandingPanel />}
+      {active === 'logo' && <BrandingPanel initialSection="logo" />}
+      {active === 'favicon' && <BrandingPanel initialSection="favicon" />}
       {active === 'admissions' && <AdmissionsPanel />}
       {active === 'settings' && <SchoolSettingsPanel />}
       {active === 'audit' && <AuditLogPanel />}
@@ -204,6 +267,11 @@ export function PrincipalDashboard() {
   );
 }
 
+/**
+ * Compact overview: small summary tiles that jump straight into the module, plus
+ * a short orientation note. The module buttons above remain the primary
+ * navigation, so this never replaces them.
+ */
 function Overview({
   onGo,
   counts,
@@ -211,27 +279,35 @@ function Overview({
   onGo: (id: string) => void;
   counts: { pending: number; unread: number; leave: number; submitted: number };
 }) {
-  const cards: { id: string; label: string; value: number; hint: string }[] = [
-    { id: 'registrations', label: 'Pending registrations', value: counts.pending, hint: 'Accounts awaiting a role' },
-    { id: 'parentmessages', label: 'Unread parent messages', value: counts.unread, hint: 'New enquiries from the site' },
-    { id: 'leave', label: 'Leave requests', value: counts.leave, hint: 'Awaiting a decision' },
-    { id: 'achievements', label: 'Submissions to review', value: counts.submitted, hint: 'Student of the Month' },
+  const cards: { id: string; label: string; value: number }[] = [
+    { id: 'registrations', label: 'Waiting for approval', value: counts.pending },
+    { id: 'parentmessages', label: 'Unread messages', value: counts.unread },
+    { id: 'leave', label: 'Leave to decide', value: counts.leave },
+    { id: 'achievements', label: 'Submissions to review', value: counts.submitted },
+  ];
+
+  const actions: [string, string][] = [
+    ['publicnotices', 'Publish a notice'],
+    ['internal', 'Message staff'],
+    ['alerts', 'Raise an emergency alert'],
+    ['assignments', 'Assign classes'],
+    ['timing', 'Update timings'],
+    ['settings', 'School settings'],
   ];
 
   return (
     <>
-      <Panel title="Welcome back" description="Everything you need is grouped in the menu. Start with what needs a decision.">
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <Panel title="Needs your attention">
+        <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
           {cards.map((c) => (
             <button
               key={c.id}
               type="button"
               onClick={() => onGo(c.id)}
-              className="rounded-xl border border-black/10 bg-surface/50 p-4 text-left transition hover:-translate-y-0.5 hover:border-navy hover:shadow-card"
+              className="min-w-0 rounded-xl border border-black/10 bg-surface/50 px-3 py-2.5 text-left transition hover:border-navy hover:shadow-card"
             >
-              <p className="text-3xl font-bold text-navy">{c.value}</p>
-              <p className="mt-1 text-sm font-medium text-navy">{c.label}</p>
-              <p className="mt-0.5 text-xs text-text/55">{c.hint}</p>
+              <p className="text-xl font-bold leading-none text-navy">{c.value}</p>
+              <p className="mt-1 break-words text-xs font-medium text-text/70">{c.label}</p>
             </button>
           ))}
         </div>
@@ -239,26 +315,21 @@ function Overview({
 
       <Panel title="Quick actions">
         <div className="flex flex-wrap gap-2">
-          {([
-            ['publicnotices', 'Publish a notice'],
-            ['internal', 'Message staff'],
-            ['alerts', 'Raise emergency alert'],
-            ['gallery', 'Manage gallery'],
-            ['timing', 'Update timings'],
-            ['settings', 'School settings'],
-          ] as [string, string][]).map(([id, label]) => (
+          {actions.map(([id, label]) => (
             <button
               key={id}
               type="button"
               onClick={() => onGo(id)}
-              className="rounded-lg border border-black/10 px-3 py-2 text-sm text-navy transition hover:border-navy hover:bg-surface"
+              className="btn-secondary"
             >
               {label}
             </button>
           ))}
         </div>
-        <p className="mt-3">
-          <Pill tone="info">Authorization is enforced by the database, not these buttons.</Pill>
+        <p className="mt-3 flex items-start gap-2 text-sm text-text/60">
+          <Cog className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+          Use the module buttons above to reach every tool. You can also open the Teacher Dashboard
+          to work inside a class — you will keep full principal permissions there.
         </p>
       </Panel>
     </>

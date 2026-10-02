@@ -1,6 +1,6 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { GraduationCap, LogOut, Menu, X } from 'lucide-react';
+import { ArrowLeft, GraduationCap, LogOut, Menu, X } from 'lucide-react';
 import { useAuth } from './AuthProvider';
 import { useBranding } from '@/lib/branding';
 
@@ -31,9 +31,14 @@ export interface NavGroup {
  *                slide-over drawer containing the same grouped navigation.
  *   • Sign out and the signed-in identity live INSIDE the drawer/profile area,
  *     never in the top row, so nothing can overlap or overflow.
- *   • Role switching is intentionally absent: `user_roles` stores exactly one
- *     role per account, so an account is never shown both dashboards. A
- *     principal already has full teacher capabilities inside this dashboard.
+ *   • The drawer is SECONDARY navigation. Each dashboard also renders its module
+ *     buttons directly on the homepage (see `ModuleGrid`), so nothing needs the
+ *     drawer to be reachable.
+ *   • A module shows a Back button (and, on desktop, a breadcrumb) that returns
+ *     to the dashboard home in one tap.
+ *   • `headerRight` is where a dashboard places its dashboard-switch button — an
+ *     approved principal may open BOTH dashboards; nothing is stored in
+ *     localStorage and no re-login is required.
  *
  * Route access is still UX only — RLS + Netlify Functions remain the real gate.
  */
@@ -44,6 +49,8 @@ export function AdminShell({
   onSelect,
   children,
   headerRight,
+  homeId = 'overview',
+  homeLabel = 'Dashboard',
 }: {
   title: string;
   groups: NavGroup[];
@@ -51,14 +58,29 @@ export function AdminShell({
   onSelect: (id: string) => void;
   children: ReactNode;
   headerRight?: ReactNode;
+  /** Id of the dashboard-home module — used for the back button and breadcrumb. */
+  homeId?: string;
+  homeLabel?: string;
 }) {
   const { session, role, signOut } = useAuth();
   const { data: branding } = useBranding();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const firstRun = useRef(true);
 
   const email = session?.user.email ?? '';
   const logo = branding?.resolved.logo ?? null;
+
+  // Tapping a module button (or a drawer entry) brings its content into view, so
+  // the persistent button grid never forces a manual scroll to see the result.
+  useEffect(() => {
+    if (firstRun.current) {
+      firstRun.current = false;
+      return;
+    }
+    contentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [active]);
 
   // Close the drawer on Escape and lock body scroll while it is open.
   useEffect(() => {
@@ -212,11 +234,36 @@ export function AdminShell({
 
         {/* ---------- content ---------- */}
         <main className="min-w-0 flex-1">
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-            <h1 className="min-w-0 text-xl font-bold text-navy sm:text-2xl">{title}</h1>
-            {headerRight && <div className="flex shrink-0 flex-wrap items-center gap-2">{headerRight}</div>}
+          <div ref={contentRef} className="scroll-mt-20">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+              <div className="min-w-0">
+                {active !== homeId && (
+                  <nav aria-label="Breadcrumb" className="mb-1 hidden items-center gap-1.5 text-xs text-text/50 lg:flex">
+                    <button
+                      type="button"
+                      onClick={() => onSelect(homeId)}
+                      className="hover:text-navy hover:underline"
+                    >
+                      {homeLabel}
+                    </button>
+                    <span aria-hidden>/</span>
+                    <span className="text-text/70">{title}</span>
+                  </nav>
+                )}
+                <h1 className="min-w-0 text-xl font-bold text-navy sm:text-2xl">{title}</h1>
+              </div>
+              <div className="flex shrink-0 flex-wrap items-center gap-2">
+                {active !== homeId && (
+                  <button type="button" onClick={() => onSelect(homeId)} className="btn-secondary">
+                    <ArrowLeft className="h-4 w-4" aria-hidden />
+                    {homeLabel}
+                  </button>
+                )}
+                {headerRight}
+              </div>
+            </div>
+            <div className="grid gap-4">{children}</div>
           </div>
-          <div className="grid gap-4">{children}</div>
         </main>
       </div>
     </div>

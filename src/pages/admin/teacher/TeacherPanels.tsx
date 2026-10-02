@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { BookOpen, FileText, GraduationCap } from 'lucide-react';
@@ -24,8 +24,14 @@ import {
   TextInput,
   formatDate,
   formatDateTime,
+  messageFor,
   useAction,
 } from '@/components/admin/kit';
+
+interface ScopeEntry {
+  class_id: string;
+  section_id: string | null;
+}
 
 interface Assignment {
   class_id: string;
@@ -34,22 +40,72 @@ interface Assignment {
   sections: { name: string } | null;
 }
 
-/** The signed-in teacher's class assignments (RLS limits these to their own). */
-function useAssignments() {
-  const { session } = useAuth();
+/**
+ * The signed-in user's teaching scope.
+ *
+ *  • Teacher  → only their own `teacher_class_assignments` (RLS enforces this
+ *               server-side too, so a forged client request returns nothing).
+ *  • Principal → every class and section, because `teacher_owns_class()` and
+ *               `teacher_can()` in 0002_rls.sql short-circuit to true for
+ *               `is_principal()`. This is supervisory access: no role is changed,
+ *               nothing is written to localStorage, and no re-login is needed.
+ *
+ * A `section_id` of `null` means "the whole class, i.e. every section", which is
+ * exactly how the principal's scope is expressed and how the assignment table
+ * already represents a whole-class assignment for a teacher.
+ */
+function useTeachScope() {
+  const { session, role } = useAuth();
   const uid = session?.user.id;
-  return useQuery({
-    queryKey: ['my-assignments', uid],
+  const isPrincipal = role === 'principal';
+  const { data: classes } = useClasses();
+
+  const query = useQuery({
+    queryKey: ['my-assignments', uid, isPrincipal],
     enabled: !!uid,
-    queryFn: async (): Promise<Assignment[]> => {
-      const { data, error } = await supabase
-        .from('teacher_class_assignments')
-        .select('class_id, section_id, classes(name), sections(name)')
-        .eq('user_id', uid);
+    queryFn: async (): Promise<ScopeEntry[]> => {
+      let q = supabase.from('teacher_class_assignments').select('class_id, section_id');
+      // The principal reads every assignment row (RLS grants is_principal()); we
+      // do not depend on that here — the scope below is built from all classes.
+      if (!isPrincipal) q = q.eq('user_id', uid);
+      const { data, error } = await q;
       if (error) throw error;
-      return (data as unknown as Assignment[]) ?? [];
+      return (data as ScopeEntry[]) ?? [];
     },
   });
+
+  const entries = useMemo<Assignment[]>(() => {
+    const all = classes ?? [];
+    if (isPrincipal) {
+      return all.map((c) => ({
+        class_id: c.id,
+        section_id: null,
+        classes: { name: c.name },
+        sections: null,
+      }));
+    }
+    return (query.data ?? []).map((a) => {
+      const c = all.find((x) => x.id === a.class_id);
+      const s = c?.sections.find((x) => x.id === a.section_id);
+      return {
+        class_id: a.class_id,
+        section_id: a.section_id,
+        classes: c ? { name: c.name } : null,
+        sections: s ? { name: s.name } : null,
+      };
+    });
+  }, [classes, isPrincipal, query.data]);
+
+  return {
+    entries,
+    allClasses: classes ?? [],
+    isPrincipal,
+    isLoading: query.isLoading || (isPrincipal && classes === undefined),
+    isError: query.isError,
+    error: query.error,
+    isFetching: query.isFetching,
+    refetch: query.refetch,
+  };
 }
 
 function labelFor(a: Assignment): string {
@@ -61,7 +117,8 @@ function labelFor(a: Assignment): string {
  * My classes — useful assigned-class display with quick links and empty state.
  * ------------------------------------------------------------------------- */
 export function MyClassesPanel({ onGo }: { onGo: (id: string) => void }) {
-  const { data: assignments, isLoading } = useAssignments();
+  const { entries: assignments, isLoading, isError, error, refetch, isFetching, isPrincipal } =
+    useTeachScope();
   const { data: perms } = useQuery({
     queryKey: ['my-perms'],
     queryFn: async () => {
@@ -73,6 +130,17 @@ export function MyClassesPanel({ onGo }: { onGo: (id: string) => void }) {
   });
 
   if (isLoading) return <Panel title="My classes"><LoadingBlock /></Panel>;
+
+  if (isError) {
+    return (
+      <Panel title="My classes">
+        <ErrorNote>Unable to load your classes. {messageFor(error)}</ErrorNote>
+        <div className="mt-3">
+          <Btn variant="primary" loading={isFetching} onClick={() => void refetch()}>Retry</Btn>
+        </div>
+      </Panel>
+    );
+  }
 
   const permsList = perms
     ? ([
@@ -92,7 +160,19 @@ export function MyClassesPanel({ onGo }: { onGo: (id: string) => void }) {
 
   return (
     <div className="grid gap-4">
-      <Panel title="Your access" description="Only the classes assigned to you are visible anywhere in this dashboard.">
+      <Panel
+        title={isPrincipal ? 'Your access — principal' : 'Your access'}
+        description={
+          isPrincipal
+            ? 'Principal access — all authorized classes. Choose any class and section in the tools below; every change is still audited and enforced by the database.'
+            : 'Only the classes assigned to you are visible anywhere in this dashboard.'
+        }
+      >
+        {isPrincipal && (
+          <div className="mb-3">
+            <Pill tone="warn">Principal access — all authorized classes</Pill>
+          </div>
+        )}
         {permsList.length > 0 && (
           <div className="mb-3 flex flex-wrap items-center gap-2">
             <span className="text-sm text-text/60">Extra permissions:</span>
@@ -162,8 +242,7 @@ export function HomeworkPanel() {
   const uid = session?.user.id;
   const action = useAction();
   const { data: classes } = useClasses();
-  const { data: assignments } = useAssignments();
-
+  const { entries: assignments } = useTeachScope();
   const [classId, setClassId] = useState('');
   const [sectionId, setSectionId] = useState('');
   const [subject, setSubject] = useState('');
@@ -393,7 +472,7 @@ export function ClassNoticesTeacherPanel() {
   const uid = session?.user.id;
   const action = useAction();
   const { data: classes } = useClasses();
-  const { data: assignments } = useAssignments();
+  const { entries: assignments } = useTeachScope();
   const [classId, setClassId] = useState('');
   const [sectionId, setSectionId] = useState('');
   const [title, setTitle] = useState('');
@@ -748,11 +827,15 @@ export function BirthdaysPanel() {
     },
   });
   const { data: classes } = useClasses();
-  const { data: assignments } = useAssignments();
+  const { entries: assignments, isPrincipal } = useTeachScope();
   const [sel, setSel] = useState({ classId: '', sectionId: '' });
   const [form, setForm] = useState({ name: '', dob: '' });
 
-  const permitted = !!perms?.can_birthdays;
+  // The principal keeps supervisory access even though the per-permission flag
+  // belongs to teachers: `teacher_can('birthdays')` already returns true for
+  // is_principal(), so gating the UI on the flag alone would hide a tool the
+  // database would happily allow.
+  const permitted = isPrincipal || !!perms?.can_birthdays;
   const assignedClassIds = Array.from(new Set((assignments ?? []).map((a) => a.class_id)));
 
   const { data: rows, isLoading } = useQuery({
@@ -882,8 +965,8 @@ export function SpotlightPanel() {
     },
   });
   const { data: classes } = useClasses();
-  const { data: assignments } = useAssignments();
-  const permitted = !!perms?.can_spotlight;
+  const { entries: assignments, isPrincipal } = useTeachScope();
+  const permitted = isPrincipal || !!perms?.can_spotlight;
 
   const [classId, setClassId] = useState('');
   const [sectionId, setSectionId] = useState('');
@@ -1034,9 +1117,121 @@ export function SpotlightPanel() {
   );
 }
 
+/** ---------------------------------------------------------------------------
+ * Access Summary — exactly what this account may touch, and why.
+ * ------------------------------------------------------------------------- */
+export function AccessSummaryPanel() {
+  const { entries, isPrincipal, isLoading, isError, error, refetch, isFetching } = useTeachScope();
+  const { data: classes } = useClasses();
+  const { data: perms } = useQuery({
+    queryKey: ['my-perms'],
+    queryFn: async () => {
+      const { data } = await supabase.from('teacher_permissions').select('*').maybeSingle();
+      return data as
+        | { can_public_notices: boolean; can_birthdays: boolean; can_resources: boolean; can_spotlight: boolean }
+        | null;
+    },
+  });
+
+  // Subjects are not a separate table: they are recorded on each homework entry,
+  // so the summary reports the subjects this account has actually uploaded for.
+  const { data: subjects } = useQuery({
+    queryKey: ['my-subjects'],
+    queryFn: async (): Promise<string[]> => {
+      const { data, error: err } = await supabase.from('homework_uploads').select('subject');
+      if (err) throw err;
+      const found = (data ?? []).map((r) => (r.subject as string | null) ?? '').filter(Boolean);
+      return Array.from(new Set(found)).sort();
+    },
+  });
+
+  if (isLoading) return <Panel title="Access summary"><LoadingBlock /></Panel>;
+
+  if (isError) {
+    return (
+      <Panel title="Access summary">
+        <ErrorNote>Unable to load your access summary. {messageFor(error)}</ErrorNote>
+        <div className="mt-3">
+          <Btn variant="primary" loading={isFetching} onClick={() => void refetch()}>Retry</Btn>
+        </div>
+      </Panel>
+    );
+  }
+
+  const classLabels = entries.map((a) => {
+    const c = (classes ?? []).find((x) => x.id === a.class_id);
+    const base = c ? (c.name === 'Nursery' ? 'Nursery' : `Class ${c.name}`) : 'Class';
+    if (a.section_id === null) return `${base} · all sections`;
+    return `${base} · Section ${a.sections?.name ?? '—'}`;
+  });
+
+  const sectionCount = entries.filter((a) => a.section_id !== null).length;
+  const permissions = [
+    perms?.can_public_notices && 'Public notices',
+    perms?.can_birthdays && 'Birthdays',
+    perms?.can_resources && 'Resources',
+    perms?.can_spotlight && 'Student of the Month',
+  ].filter(Boolean) as string[];
+
+  return (
+    <div className="grid gap-4">
+      <Panel
+        title="Access summary"
+        description="What this account is allowed to use. This is decided by the database, so nothing here can be widened from the browser."
+      >
+        <div className="grid gap-3 sm:grid-cols-4">
+          <Labeled label="Role" value={isPrincipal ? 'Principal' : 'Teacher'} />
+          <Labeled label="Assigned classes" value={entries.length} />
+          <Labeled label="Assigned sections" value={isPrincipal ? 'All' : sectionCount} />
+          <Labeled label="Extra permissions" value={permissions.length} />
+        </div>
+
+        {isPrincipal && (
+          <div className="mt-3">
+            <Pill tone="warn">Principal access — all authorized classes</Pill>
+          </div>
+        )}
+
+        <p className="mt-4 text-sm font-medium text-text/80">Classes &amp; sections</p>
+        {classLabels.length === 0 ? (
+          <Empty
+            title="No class assigned yet"
+            message="The principal must assign you a class before you can upload homework or post notices."
+          />
+        ) : (
+          <ul className="mt-1 grid gap-2 sm:grid-cols-2">
+            {classLabels.map((label) => (
+              <li key={label} className="flex items-center gap-2 rounded-lg border border-black/10 bg-surface/50 p-2.5 text-sm text-navy">
+                <GraduationCap className="h-4 w-4 shrink-0 text-navy" aria-hidden />
+                <span className="min-w-0 break-words">{label}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        <p className="mt-4 text-sm font-medium text-text/80">Subjects you have uploaded homework for</p>
+        {(subjects ?? []).length === 0 ? (
+          <p className="mt-1 text-sm text-text/60">No homework uploaded yet — subjects appear here once you upload.</p>
+        ) : (
+          <div className="mt-1 flex flex-wrap gap-2">
+            {(subjects ?? []).map((s) => <Pill key={s} tone="info">{s}</Pill>)}
+          </div>
+        )}
+
+        {permissions.length > 0 && (
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            <span className="text-sm font-medium text-text/80">Extra permissions:</span>
+            {permissions.map((p) => <Pill key={p} tone="ok">{p}</Pill>)}
+          </div>
+        )}
+      </Panel>
+    </div>
+  );
+}
+
 /** A small helper used by the teacher dashboard overview. */
 export function TeacherSummary() {
-  const { data: assignments } = useAssignments();
+  const { entries: assignments } = useTeachScope();
   const { data: leave } = useQuery({
     queryKey: ['my-leave'],
     queryFn: async () => {
