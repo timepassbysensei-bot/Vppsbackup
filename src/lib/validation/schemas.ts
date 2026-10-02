@@ -125,6 +125,8 @@ export const approveTeacherSchema = z.object({
   userId: uuid,
   action: z.enum(['approved', 'rejected', 'suspended']),
   role: z.enum(['teacher', 'principal']).optional(),
+  /** Optional note kept with the audit record (never shown publicly). */
+  reason: z.string().trim().max(300).optional(),
   perms: z
     .object({
       can_public_notices: z.boolean().optional(),
